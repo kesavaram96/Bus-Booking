@@ -333,7 +333,7 @@ The next major milestone is building the React + TypeScript frontend and connect
 
 ## 📄 License
 
-Add your preferred license here.
+Open
 
 ---
 
