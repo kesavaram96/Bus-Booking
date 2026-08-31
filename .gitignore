@@ -1,0 +1,59 @@
+## .NET
+bin/
+obj/
+out/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+.vs/
+.vscode/*
+!.vscode/extensions.json
+
+## Rider / VS
+*.DotSettings.user
+_ReSharper*/
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+
+## Test results
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+
+## Secrets & local config
+appsettings.*.local.json
+secrets.json
+*.env
+.env
+.env.*
+!.env.example
+
+## EF Core
+*.db
+*.db-shm
+*.db-wal
+
+## Logs
+logs/
+*.log
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Docker
+docker-compose.override.yml
+
+## NuGet
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+
+## Node (future React frontend)
+node_modules/
+dist/

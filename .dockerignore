@@ -1,0 +1,32 @@
+## Build output (rebuilt inside the image)
+**/bin/
+**/obj/
+**/out/
+
+## Tests — never needed in the runtime image
+tests/
+
+## IDE / OS
+**/.vs/
+**/.vscode/
+**/.idea/
+**/*.user
+.DS_Store
+
+## Git (this repo currently has none, kept for when it does)
+.git/
+.gitignore
+
+## Secrets & local config — never bake these into an image layer
+.env
+.env.*
+appsettings.*.local.json
+secrets.json
+
+## Logs
+**/logs/
+**/*.log
+
+## Docs / misc — irrelevant to the build, just bloats the context
+*.docx
+README.md

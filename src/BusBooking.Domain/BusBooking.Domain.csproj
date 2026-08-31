@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>BusBooking.Domain</RootNamespace>
+    <AssemblyName>BusBooking.Domain</AssemblyName>
+  </PropertyGroup>
+
+  <!--
+    Domain must not depend on any other project or external package.
+    It contains only entities, enums, value objects and domain rules.
+  -->
+
+</Project>

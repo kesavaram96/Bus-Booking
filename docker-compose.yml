@@ -1,0 +1,81 @@
+# Development-oriented base compose file: `docker compose up` alone runs the API against real,
+# containerized SQL Server and Redis instances, with database/Redis ports exposed on localhost
+# for direct inspection (a DB client, redis-cli) while developing.
+#
+# For a production-shaped run, layer docker-compose.prod.yml on top:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# All secrets come from environment variables — see .env.example. Copy it to .env (already
+# gitignored) and fill in real values before running either form.
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${DB_SA_PASSWORD:?Set DB_SA_PASSWORD in .env — see .env.example}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -No -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "--no-auth-warning", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: src/BusBooking.API/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=BusBookingDb;User Id=sa;Password=${DB_SA_PASSWORD};TrustServerCertificate=True;"
+      Redis__ConnectionString: "redis:6379,password=${REDIS_PASSWORD}"
+      Redis__InstanceName: "BusBooking:"
+      Jwt__Secret: ${JWT_SECRET:?Set JWT_SECRET in .env — e.g. `openssl rand -base64 48`}
+      Jwt__Issuer: BusBooking
+      Jwt__Audience: BusBooking.Client
+      Seed__SuperAdminEmail: ${SUPERADMIN_EMAIL}
+      Seed__SuperAdminPassword: ${SUPERADMIN_PASSWORD}
+      Email__Host: ${EMAIL_HOST:-}
+      Email__Port: ${EMAIL_PORT:-587}
+      Email__Username: ${EMAIL_USERNAME:-}
+      Email__Password: ${EMAIL_PASSWORD:-}
+      # No real SMTP configured by default in dev — emails are written as .eml files here
+      # instead (see EmailChannelSender, Phase 18), inspectable via the api-emails volume.
+      Email__PickupDirectory: /app/emails
+      Cors__AllowedOrigins__0: ${REACT_APP_ORIGIN:-http://localhost:5173}
+    volumes:
+      - api-emails:/app/emails
+      - api-logs:/app/logs
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  sqlserver-data:
+  redis-data:
+  api-emails:
+  api-logs:

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>BusBooking.Application</RootNamespace>
+    <AssemblyName>BusBooking.Application</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+    <PackageReference Include="Mapster" Version="10.0.0" />
+    <PackageReference Include="Mapster.DependencyInjection" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
+    <!-- Pragmatic Clean Architecture trade-off (per the project's own guidance against a
+         repository-per-entity): IApplicationDbContext exposes DbSet<T> so features can write
+         focused, composable EF Core queries instead of repository boilerplate. This is the
+         only EF Core dependency in Application — no query logic here, just the DbSet<T> shape. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BusBooking.Domain\BusBooking.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
